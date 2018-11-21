@@ -28,4 +28,8 @@ public class Lecturer {
             availability.get(day).set(hour, statusAvailability);
         }
     }
+
+    public String toString() {
+        return String.format("%s - %s", name, availability.toString());
+    }
 }
