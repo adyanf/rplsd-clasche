@@ -25,10 +25,6 @@ public class ScheduleItem {
         return classRoomId;
     }
 
-    public void setClassRoomId(String classRoomId) {
-        this.classRoomId = classRoomId;
-    }
-
     public List<String> getLecturerNames() {
         return lecturerNames;
     }
