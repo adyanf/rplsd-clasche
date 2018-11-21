@@ -26,9 +26,7 @@ public class Classroom {
     }
 
     public void removeFacilities(String facility) {
-        if (facilities.contains(facility)) {
-            facilities.remove(facility);
-        }
+        facilities.remove(facility);
     }
 
     public void addFacilities(String facility) {
