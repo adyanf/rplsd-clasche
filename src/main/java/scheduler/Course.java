@@ -73,4 +73,11 @@ public class Course {
     public void setCourseName(String courseName) {
         this.courseName = courseName;
     }
+
+    public String toString() {
+        return String.format("Course %s has %d <= capacity %d." +
+                "Has durations %d and need facilities %s. " +
+                "The lecture is %s", courseName, minimumCapacity, maximumCapacity, durations, facilities.toString(),
+                lectures);
+    }
 }
