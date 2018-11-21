@@ -33,4 +33,7 @@ public class Classroom {
         facilities.add(facility);
     }
 
+    public String toString() {
+        return String.format("Kelas %s memiliki kapasistas %d. Dengan fasilitas %s", id, capacity, facilities.toString());
+    }
 }
