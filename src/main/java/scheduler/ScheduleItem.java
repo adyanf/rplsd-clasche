@@ -33,10 +33,6 @@ public class ScheduleItem {
         return lecturerNames;
     }
 
-    public void setLecturerNames(List<String> lecturerNames) {
-        this.lecturerNames = lecturerNames;
-    }
-
     public String toString() {
         String lecturersCombinedNames = "";
         boolean first = true;
