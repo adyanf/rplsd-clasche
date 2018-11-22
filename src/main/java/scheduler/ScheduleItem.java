@@ -43,4 +43,3 @@ public class ScheduleItem {
         return String.format("%s : %s - %s", courseName, classRoomId, lecturersCombinedNames);
     }
 }
-
