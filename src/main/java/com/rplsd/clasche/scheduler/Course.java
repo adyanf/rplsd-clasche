@@ -3,7 +3,6 @@ package com.rplsd.clasche.scheduler;
 import java.util.Set;
 
 public class Course {
-    private String id;
     private String courseName;
     private Integer minimumCapacity;
     private Integer maximumCapacity;
@@ -11,19 +10,14 @@ public class Course {
     private Integer durations;
     private Set<String> lectures;
 
-    public Course(String id, String courseName, Integer minimumCapacity, Integer maximumCapacity,
+    public Course(String courseName, Integer minimumCapacity, Integer maximumCapacity,
                   Set<String> facilities, Integer durations, Set<String> lectures) {
-        this.id = id;
         this.courseName = courseName;
         this.minimumCapacity = minimumCapacity;
         this.maximumCapacity = maximumCapacity;
         this.facilities = facilities;
         this.durations = durations;
         this.lectures = lectures;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public Set<String> getFacilities() {
