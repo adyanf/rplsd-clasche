@@ -33,6 +33,18 @@ public class Classroom {
         facilities.add(facility);
     }
 
+    public Boolean isSuitable(Course course) {
+        if (capacity < course.getMinimumCapacity() || capacity > course.getMaximumCapacity()) {
+            return false;
+        }
+        for (String facility : course.getFacilities()) {
+            if (!facilities.contains(facility)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public String toString() {
         return String.format("Kelas %s memiliki kapasistas %d. Dengan fasilitas %s", id, capacity, facilities.toString());
     }
