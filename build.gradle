@@ -55,4 +55,21 @@ run {
     standardInput = System.in;
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.rplsd.clasche.App'
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'com.rplsd.clasche.App'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 mainClassName = "com.rplsd.clasche.App"

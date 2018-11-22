@@ -4,7 +4,6 @@ package com.rplsd.clasche.parser;
 }
 
 room_id: (NUMBER | WORD | ALPHANUMERIC);
-class_id: ALPHANUMERIC;
 class_name: ALPHANUMERIC;
 capacity: NUMBER;
 facility: WORD;
@@ -12,13 +11,13 @@ lecturer_name: WORD;
 teaching_hour: NUMBER;
 attendees_count: NUMBER;
 duration: NUMBER;
-class_1: class_id;
-class_2: class_id;
+class_1: class_name;
+class_2: class_name;
 max_capacity: NUMBER;
 
-array_of_lecturers: (OPEN_PARENTHESIS (lecturer_name COMMA WHITESPACE*)? lecturer_name CLOSE_PARENTHESIS | lecturer_name);
-array_of_facilities: OPEN_PARENTHESIS (facility COMMA WHITESPACE*)* facility CLOSE_PARENTHESIS;
-array_of_teaching_hours: OPEN_PARENTHESIS (teaching_hour COMMA WHITESPACE*)* teaching_hour CLOSE_PARENTHESIS;
+array_of_lecturers: (OPEN_BRACKET (lecturer_name COMMA WHITESPACE*)? lecturer_name CLOSE_BRACKET | lecturer_name);
+array_of_facilities: OPEN_BRACKET (facility COMMA WHITESPACE*)* facility CLOSE_BRACKET;
+array_of_teaching_hours: OPEN_BRACKET (teaching_hour COMMA WHITESPACE*)* teaching_hour CLOSE_BRACKET;
 
 defineClassroom
     : CLASSROOM WHITESPACE* room_id WHITESPACE* capacity WHITESPACE* array_of_facilities SEMICOLON
@@ -27,7 +26,7 @@ defineLecturer
     : LECTURER WHITESPACE* lecturer_name WHITESPACE* array_of_teaching_hours SEMICOLON
     ;
 defineClass
-    : CLASS WHITESPACE* class_id WHITESPACE* class_name WHITESPACE* array_of_lecturers WHITESPACE* attendees_count  WHITESPACE* max_capacity? WHITESPACE* array_of_facilities WHITESPACE* duration SEMICOLON
+    : CLASS WHITESPACE* class_name WHITESPACE* array_of_lecturers WHITESPACE* attendees_count  WHITESPACE* max_capacity? WHITESPACE* array_of_facilities WHITESPACE* duration SEMICOLON
     ;
 eval
 	:	((defineClassroom | defineLecturer | defineClass) WHITESPACE*)* EOF
@@ -70,13 +69,13 @@ COLON : ':';
 SEMICOLON : ';';
 WHITESPACE : (' ' | '\r' | '\n')+ -> skip;
 
-NUMBER : DIGIT+;
-WORD : (LOWERCASE | UPPERCASE)+;
-ALPHANUMERIC : (LOWERCASE | UPPERCASE | DIGIT)+;
-
 CLASSROOM : C L A S S R O O M;
 LECTURER : L E C T U R E R;
 CLASS : C L A S S;
+
+NUMBER : DIGIT+;
+WORD : (LOWERCASE | UPPERCASE)+;
+ALPHANUMERIC : (LOWERCASE | UPPERCASE | DIGIT)+;
 
 
 
