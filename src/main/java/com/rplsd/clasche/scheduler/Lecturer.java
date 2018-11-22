@@ -1,4 +1,4 @@
-package scheduler;
+package com.rplsd.clasche.scheduler;
 
 import java.util.ArrayList;
 
