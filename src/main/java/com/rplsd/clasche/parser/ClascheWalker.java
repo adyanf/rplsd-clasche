@@ -10,7 +10,6 @@ import java.util.TreeSet;
 
 public class ClascheWalker extends ClascheBaseListener {
     private String roomId;
-    private String classId;
     private String className;
     private int capacity;
     private String lecturerName;
@@ -49,10 +48,10 @@ public class ClascheWalker extends ClascheBaseListener {
     public void exitDefineClass(ClascheParser.DefineClassContext ctx) {
         System.out.println(String.format(
                 "Define Class: %s %s %s %s %s %s",
-                classId, className, attendeesCount, maxCapacity, facilities, duration, lecturers
+                className, attendeesCount, maxCapacity, facilities, duration, lecturers
         ));
         Course course = new Course(
-                classId, className, attendeesCount, maxCapacity, facilities, duration, lecturers
+                className, attendeesCount, maxCapacity, facilities, duration, lecturers
         );
         course.toString();
     }
@@ -91,11 +90,6 @@ public class ClascheWalker extends ClascheBaseListener {
     public void enterLecturer_name(ClascheParser.Lecturer_nameContext ctx) {
         lecturerName = ctx.getText();
         lecturers.add(lecturerName);
-    }
-
-    @Override
-    public void enterClass_id(ClascheParser.Class_idContext ctx) {
-        classId = ctx.getText();
     }
 
     @Override
