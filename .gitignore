@@ -1,7 +1,11 @@
 .idea
 .settings/*
 .gradle/*
+
 bin/
+build/
+generated-src/
+
 .classpath
 .project
 .DS_Store
