@@ -247,4 +247,16 @@ public class Scheduler {
         if (schedule(constraintScheduleRule.add(preferredScheduleRule), 0, 0)) return true;
         return schedule(constraintScheduleRule, 0, 0);
     }
+
+    public void printSchedule() {
+        for (int day = 0; day < workDaysInAWeek; day++) {
+            for (int time = 0; time < workHoursInADay; time++) {
+                System.out.println(String.format("Day %s - Time %s: [", day, time));
+                for (ScheduleItem scheduleItem: schedules.get(day).get(time)) {
+                    System.out.println(scheduleItem.toString());
+                }
+                System.out.println("]");
+            }
+        }
+    }
 }
