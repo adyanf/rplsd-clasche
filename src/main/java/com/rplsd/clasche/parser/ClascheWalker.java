@@ -3,6 +3,7 @@ package com.rplsd.clasche.parser;
 import com.rplsd.clasche.scheduler.Classroom;
 import com.rplsd.clasche.scheduler.Course;
 import com.rplsd.clasche.scheduler.Lecturer;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -19,6 +20,11 @@ public class ClascheWalker extends ClascheBaseListener {
     private Set<String> lecturers = new TreeSet<>();
     private Set<String> facilities = new TreeSet<>();
     private ArrayList<String> teachingHours = new ArrayList<>();
+    private ArrayList<Pair<String, String>> classes =new ArrayList<>();
+    private String currentRuleType;
+    private String class1;
+    private String class2;
+    private ArrayList<String> classFilter = new ArrayList<>();
 
     @Override
     public void exitDefineClassroom(ClascheParser.DefineClassroomContext ctx) {
@@ -27,16 +33,17 @@ public class ClascheWalker extends ClascheBaseListener {
                 roomId, capacity, facilities
         );
 
-        classroom.toString();
+        facilities = new TreeSet<>();
+        ClascheContext.getInstance().getScheduler().addClassroom(classroom);
     }
 
     @Override
     public void exitDefineLecturer(ClascheParser.DefineLecturerContext ctx) {
         System.out.println(String.format("Define Lecturer: %s %s", lecturerName, teachingHours));
         Lecturer lecturer = new Lecturer(
-                lecturerName, availabilityParser(teachingHours)
+                lecturerName, ClascheContext.availabilityParser(teachingHours)
         );
-        lecturer.toString();
+        ClascheContext.getInstance().getScheduler().addLecture(lecturer);
     }
 
     @Override
@@ -53,7 +60,20 @@ public class ClascheWalker extends ClascheBaseListener {
         Course course = new Course(
                 className, attendeesCount, maxCapacity, facilities, duration, lecturers
         );
-        course.toString();
+        facilities = new TreeSet<>();
+        lecturers = new TreeSet<>();
+        ClascheContext.getInstance().getScheduler().addClassRequirement(course);
+    }
+
+    @Override
+    public void enterStartSchedule(ClascheParser.StartScheduleContext ctx) {
+        if (ClascheContext.getInstance().getScheduler().schedule()) {
+            System.out.println("Schedule Created");
+        } else {
+            System.out.println("No schedule can satisfy all constraint");
+        }
+        ClascheContext.getInstance().getScheduler().printSchedule();
+
     }
 
     @Override
@@ -117,21 +137,112 @@ public class ClascheWalker extends ClascheBaseListener {
         lecturers = new TreeSet<>();
     }
 
-    public static ArrayList< ArrayList<Boolean> > availabilityParser(ArrayList<String> teachingHours) {
-        ArrayList<ArrayList<Boolean>> res = new ArrayList<>();
-        for(int i = 0; i<5; i++) {
-            ArrayList<Boolean> buff = new ArrayList<Boolean>(11);
-            for(int j = 0; j<11; j++) {
-                buff.add(false);
-            }
-            res.add(buff);
+    @Override
+    public void enterFixed_schedule(ClascheParser.Fixed_scheduleContext ctx) {
+        currentRuleType = ClascheContext.FIXED_SCHEDULE;
+    }
+
+    @Override
+    public void enterNon_conflict(ClascheParser.Non_conflictContext ctx) {
+        currentRuleType = ClascheContext.NON_CONFLICT;
+        classes = new ArrayList<>();
+    }
+    @Override public void enterTeaching_duration_limit(ClascheParser.Teaching_duration_limitContext ctx) {
+        currentRuleType = ClascheContext.MAX_LECTURER_HOUR;
+    }
+    @Override
+    public void exitClass_1(ClascheParser.Class_1Context ctx) {
+        class1 = className;
+    }
+
+    @Override
+    public void exitClass_2(ClascheParser.Class_2Context ctx) {
+        class2 = className;
+    }
+
+    @Override
+    public void exitPair_of_class_name(ClascheParser.Pair_of_class_nameContext ctx) {
+        classes.add(new Pair(class1,class2));
+    }
+    @Override
+    public void enterUnavailable(ClascheParser.UnavailableContext ctx) {
+        currentRuleType = ClascheContext.RESTRICTED_TIME;
+        teachingHours = new ArrayList<>();
+
+    }
+
+    @Override
+    public void exitDefineConstraint(ClascheParser.DefineConstraintContext ctx) {
+        switch (currentRuleType) {
+            case ClascheContext.FIXED_SCHEDULE:
+                System.out.println(String.format("Define Constraint Fixed Schedule for Class %s : %s", className, teachingHours));
+                ClascheContext.getInstance().getScheduler().getConstraintScheduleRule().addFixedClassSchedule(
+                        className, ClascheContext.timeParser(teachingHours)
+                );
+                teachingHours = new ArrayList<>();
+                break;
+            case ClascheContext.NON_CONFLICT:
+                System.out.println("Define Constraint Non-Conflicting classes "+ classes);
+                for(Pair<String,String> i : classes) {
+                    ClascheContext.getInstance().getScheduler().getConstraintScheduleRule().addNonConflictingClassRule(
+                            i.getKey(), i.getValue()
+                    );
+                }
+                classes = new ArrayList<>();
+                break;
+            case ClascheContext.MAX_LECTURER_HOUR:
+                System.out.println("Define Constraint Teaching duration limit per day "+ duration+ "hour");
+                ClascheContext.getInstance().getScheduler().getConstraintScheduleRule().setMaxLecturerHourInADay(
+                        duration
+                );
+                break;
+            case ClascheContext.RESTRICTED_TIME:
+                System.out.println("Define Constraint Unavailable at "+ teachingHours);
+                for(String i : teachingHours) {
+                    Pair<Integer,Integer> pairTimeDay = ClascheContext.timeConverter(i);
+                    ClascheContext.getInstance().getScheduler().getConstraintScheduleRule().addRestrictedTime(
+                            pairTimeDay.getKey(), pairTimeDay.getValue()
+                    );
+                }
+                teachingHours = new ArrayList<>();
+                break;
         }
-        for(String i : teachingHours) {
-            int day = Integer.parseInt(i.substring(0,1))-1;
-            int hour = Integer.parseInt(i.substring(1))-1;
-            res.get(day).set(hour, true);
+    }
+
+    public void exitDefinePreference(ClascheParser.DefinePreferenceContext ctx) {
+        switch (currentRuleType) {
+            case ClascheContext.FIXED_SCHEDULE:
+                System.out.println(String.format("Define Preference Fixed Schedule for Class %s : %s", className, teachingHours));
+                ClascheContext.getInstance().getScheduler().getPreferredScheduleRule().addFixedClassSchedule(
+                        className, ClascheContext.timeParser(teachingHours)
+                );
+                teachingHours = new ArrayList<>();
+                break;
+            case ClascheContext.NON_CONFLICT:
+                System.out.println("Define Preference Non-Conflicting classes "+ classes);
+                for(Pair<String,String> i : classes) {
+                    ClascheContext.getInstance().getScheduler().getPreferredScheduleRule().addNonConflictingClassRule(
+                            i.getKey(), i.getValue()
+                    );
+                }
+                break;
+            case ClascheContext.MAX_LECTURER_HOUR:
+                System.out.println("Define Preference Teaching duration limit per day "+ duration+ "hour");
+                ClascheContext.getInstance().getScheduler().getPreferredScheduleRule().setMaxLecturerHourInADay(
+                        duration
+                );
+                break;
+            case ClascheContext.RESTRICTED_TIME:
+                System.out.println("Define Preference Unavailable at "+ teachingHours);
+                for(String i : teachingHours) {
+                    Pair<Integer,Integer> pairTimeDay = ClascheContext.timeConverter(i);
+                    ClascheContext.getInstance().getScheduler().getPreferredScheduleRule().addRestrictedTime(
+                            pairTimeDay.getKey(), pairTimeDay.getValue()
+                    );
+                }
+                teachingHours = new ArrayList<>();
+                break;
         }
-        return res;
     }
     
 }

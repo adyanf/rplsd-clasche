@@ -22,6 +22,7 @@ configurations {
 dependencies {
     antlr "org.antlr:antlr4:4.7.1"
     compile "org.antlr:antlr4-runtime:4.7.1"
+    compile 'com.google.code.gson:gson:2.8.5'
 }
 
 generateGrammarSource {

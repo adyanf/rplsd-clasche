@@ -1,5 +1,6 @@
 package com.rplsd.clasche.scheduler;
 
+import com.google.gson.Gson;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -123,6 +124,14 @@ public class Scheduler {
         lecturersAvailability.put(lecturer.getName(), availability);
     }
 
+    public void addClassRequirement(Course course) {
+        courses.add(course);
+    }
+
+    public void setCourses(ArrayList<Course> courses) {
+        this.courses = courses;
+    }
+
     public void setConstraintScheduleRule(ScheduleRule constraintScheduleRule) {
         this.constraintScheduleRule = constraintScheduleRule;
     }
@@ -195,8 +204,9 @@ public class Scheduler {
         if (!isAllLecturesAvailable(course.getLecturers(), day, time)) return false;
         if (!isAllValidNonConflict(rule, course.getCourseName(), day, time)) return false;
         if (rule.getRestrictedTime().contains(new Pair<>(day, time))) return false;
-        if (!isFixedSchedule(rule, course.getCourseName(), day, time)) return false;
-        return isValidLectureMaxHourInADay(rule, course.getLecturers(), day);
+        if (isFixedSchedule(rule, course.getCourseName(), day, time)) return false;
+        if (!isValidLectureMaxHourInADay(rule, course.getLecturers(), day)) return false;
+        return true;
     }
 
     private boolean schedule(ScheduleRule rule, int currentClassRequirementIndex, int currentHour) {
@@ -209,6 +219,7 @@ public class Scheduler {
                 for (int time = 0; time < workHoursInADay; time++) {
                     if (isValidConstraints(rule, currentCourse, satisfyingClassroom, day, time)) {
                         ScheduleItem scheduleItem = new ScheduleItem(currentCourse.getCourseName(), satisfyingClassroom.getId(), currentCourse.getLecturers());
+                        System.out.println(scheduleItem.getCourseName() + " " + scheduleItem.getClassRoomId() + " " + scheduleItem.getLecturerNames() + " " + day + " " + time);
                         schedules.get(day).get(time).add(scheduleItem);
                         classroomsAvailability.get(satisfyingClassroom.getId()).get(day).set(time, false);
                         for (String lectureName : currentCourse.getLecturers()) {
@@ -258,5 +269,10 @@ public class Scheduler {
                 System.out.println("]");
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }
