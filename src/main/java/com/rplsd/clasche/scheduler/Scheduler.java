@@ -260,7 +260,7 @@ public class Scheduler {
     }
 
     public void printSchedule() {
-        String[] days = {"Senin", "Selasa", "Rabu", "Kamis", "Jumat"};
+        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
         for (int day = 0; day < workDaysInAWeek; day++) {
             int i = 0;
             while (i < workHoursInADay){
