@@ -27,22 +27,22 @@ teaching_duration_limit: TEACHING DURATION LIMIT duration;
 
 
 defineClassroom
-    : CLASSROOM WHITESPACE* room_id WHITESPACE* capacity WHITESPACE* array_of_facilities SEMICOLON
+    : ADD CLASSROOM WHITESPACE* room_id WHITESPACE* capacity WHITESPACE* array_of_facilities SEMICOLON
     ;
 defineLecturer
-    : LECTURER WHITESPACE* lecturer_name WHITESPACE* array_of_teaching_hours SEMICOLON
+    : ADD LECTURER WHITESPACE* lecturer_name WHITESPACE* array_of_teaching_hours SEMICOLON
     ;
 defineClass
-    : CLASS WHITESPACE* class_name WHITESPACE* array_of_lecturers WHITESPACE* attendees_count  WHITESPACE* max_capacity? WHITESPACE* array_of_facilities WHITESPACE* duration SEMICOLON
+    : ADD CLASS WHITESPACE* class_name WHITESPACE* array_of_lecturers WHITESPACE* attendees_count  WHITESPACE* max_capacity? WHITESPACE* array_of_facilities WHITESPACE* duration SEMICOLON
     ;
 defineConstraint
-    : CONSTRAINT (fixed_schedule | non_conflict | unavailable | teaching_duration_limit) SEMICOLON
+    : ADD CONSTRAINT (fixed_schedule | non_conflict | unavailable | teaching_duration_limit) SEMICOLON
     ;
 definePreference
-    : PREFERENCE (fixed_schedule | non_conflict | unavailable | teaching_duration_limit) SEMICOLON
+    : ADD PREFERENCE (fixed_schedule | non_conflict | unavailable | teaching_duration_limit) SEMICOLON
     ;
 startSchedule
-    : SCHEDULE SEMICOLON
+    : GENERATE SCHEDULE SEMICOLON
     ;
 eval
 	:	((defineClassroom | defineLecturer | defineClass | defineConstraint | definePreference | startSchedule) WHITESPACE*)* EOF
@@ -91,12 +91,14 @@ CLASS : C L A S S;
 PREFERENCE : P R E F E R E N C E;
 CONSTRAINT : C O N S T R A I N T;
 SCHEDULE : S C H E D U L E;
+GENERATE : G E N E R A T E;
 FIXED : F I X E D;
 NONCONFLICT : N O N DASH C O N F L I C T;
 UNAVAILABLE : U N A V A I L A B L E;
 TEACHING: T E A C H I N G;
 LIMIT: L I M I T;
 DURATION: D U R A T I O N;
+ADD: A D D;
 
 NUMBER : DIGIT+;
 WORD : (LOWERCASE | UPPERCASE)+;
