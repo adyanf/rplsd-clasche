@@ -36,7 +36,7 @@ public class Course {
         return minimumCapacity;
     }
 
-    public Set<String> getLectures() {
+    public Set<String> getLecturers() {
         return lectures;
     }
 

@@ -1,13 +1,13 @@
 package com.rplsd.clasche.scheduler;
 
-import java.util.List;
+import java.util.Set;
 
 public class ScheduleItem {
     private String courseName;
     private String classRoomId;
-    private List<String> lecturerNames;
+    private Set<String> lecturerNames;
 
-    public ScheduleItem(String courseName, String classRoomId, List<String> lecturerNames) {
+    public ScheduleItem(String courseName, String classRoomId, Set<String> lecturerNames) {
         this.courseName = courseName;
         this.classRoomId = classRoomId;
         this.lecturerNames = lecturerNames;
@@ -25,7 +25,7 @@ public class ScheduleItem {
         return classRoomId;
     }
 
-    public List<String> getLecturerNames() {
+    public Set<String> getLecturerNames() {
         return lecturerNames;
     }
 
