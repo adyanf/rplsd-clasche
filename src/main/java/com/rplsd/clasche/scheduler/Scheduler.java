@@ -261,12 +261,28 @@ public class Scheduler {
 
     public void printSchedule() {
         for (int day = 0; day < workDaysInAWeek; day++) {
-            for (int time = 0; time < workHoursInADay; time++) {
-                System.out.println(String.format("Day %s - Time %s: [", day, time));
-                for (ScheduleItem scheduleItem: schedules.get(day).get(time)) {
-                    System.out.println(scheduleItem.toString());
+            int i = 0;
+            while (i < workHoursInADay){
+                if (!schedules.get(day).get(i).isEmpty())
+                    break;
+                else
+                    i++;
+            }
+            if (i < workHoursInADay) {
+                System.out.println("______________________");
+                System.out.println(String.format("Day %s", day));
+                for (int time = i; time < workHoursInADay; time++) {
+                    System.out.print(String.format("Time %s: ", time));
+                    if (schedules.get(day).get(time).isEmpty())
+                        System.out.println(String.format("-"));
+                    else {
+                        System.out.println(String.format("["));
+                        for (ScheduleItem scheduleItem : schedules.get(day).get(time)) {
+                            System.out.println(scheduleItem.toString());
+                        }
+                        System.out.println("]");
+                    }
                 }
-                System.out.println("]");
             }
         }
     }
