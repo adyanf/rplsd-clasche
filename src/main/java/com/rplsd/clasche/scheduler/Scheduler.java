@@ -260,6 +260,7 @@ public class Scheduler {
     }
 
     public void printSchedule() {
+        String[] days = {"Senin", "Selasa", "Rabu", "Kamis", "Jumat"};
         for (int day = 0; day < workDaysInAWeek; day++) {
             int i = 0;
             while (i < workHoursInADay){
@@ -268,9 +269,9 @@ public class Scheduler {
                 else
                     i++;
             }
+            System.out.println("______________________");
+            System.out.println(String.format("%s\n", days[day]));
             if (i < workHoursInADay) {
-                System.out.println("______________________");
-                System.out.println(String.format("Day %s", day));
                 for (int time = i; time < workHoursInADay; time++) {
                     System.out.print(String.format("Time %s: ", time));
                     if (schedules.get(day).get(time).isEmpty())
@@ -284,6 +285,8 @@ public class Scheduler {
                     }
                 }
             }
+            else
+                System.out.println("-");
         }
     }
 
