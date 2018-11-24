@@ -264,19 +264,20 @@ public class Scheduler {
         for (int day = 0; day < workDaysInAWeek; day++) {
             int hour = 0;
             while (hour < workHoursInADay){
-                if (!schedules.get(day).get(hour).isEmpty())
+                if (!schedules.get(day).get(hour).isEmpty()) {
                     break;
-                else
+                } else {
                     hour++;
+                }
             }
             System.out.println("______________________");
             System.out.println(String.format("%s\n", days[day]));
             if (hour < workHoursInADay) {
                 for (int time = hour; time < workHoursInADay; time++) {
                     System.out.print(String.format("Time %s: ", time));
-                    if (schedules.get(day).get(time).isEmpty())
+                    if (schedules.get(day).get(time).isEmpty()) {
                         System.out.println(String.format("-"));
-                    else {
+                    } else {
                         System.out.println(String.format("["));
                         for (ScheduleItem scheduleItem : schedules.get(day).get(time)) {
                             System.out.println(scheduleItem.toString());
@@ -284,9 +285,9 @@ public class Scheduler {
                         System.out.println("]");
                     }
                 }
-            }
-            else
+            } else {
                 System.out.println("-");
+            }
         }
     }
 
