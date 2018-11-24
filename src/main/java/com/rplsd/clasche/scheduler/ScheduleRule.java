@@ -114,4 +114,49 @@ public class ScheduleRule {
         int maxLecturerHourInADay = Integer.min(this.maxLecturerHourInADay, scheduleRule.maxLecturerHourInADay);
         return new ScheduleRule(nonConflictingClasses, fixedClassSchedules, restrictedTime, maxLecturerHourInADay);
     }
+
+    public ScheduleRule add(ScheduleRule scheduleRule, Boolean[] mask) {
+        Map<String, Set<String>> nonConflictingClasses = new HashMap<>();
+        Map<String, Set<Pair<Integer, Integer>>> fixedClassSchedules = new HashMap<>();
+        int count = mask.length-1;
+        Set<Pair<Integer, Integer>> restrictedTime = new TreeSet<>(
+                new Comparator<Pair<Integer, Integer>>(){
+                    @Override
+                    public int compare(Pair<Integer, Integer> curr, Pair<Integer, Integer> other) {
+                        if (curr.getValue() < other.getValue()) return 1;
+                        if (curr.getValue().equals(other.getValue())) {
+                            return curr.getKey().compareTo(other.getKey());
+                        }
+                        return -1;
+                    }
+                }
+        );
+        for (Map.Entry<String, Set<String>> entry: scheduleRule.getNonConflictingClasses().entrySet()) {
+            if (count >= 0 && mask[count]) {
+                nonConflictingClasses.put(entry.getKey(), entry.getValue());
+            }
+            --count;
+        }
+        for (Map.Entry<String, Set<String>> entry: this.getNonConflictingClasses().entrySet()) {
+            nonConflictingClasses.put(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, Set<Pair<Integer, Integer>>> entry: scheduleRule.getFixedClassSchedules().entrySet()) {
+            if (count >= 0 && mask[count]) {
+                fixedClassSchedules.put(entry.getKey(), entry.getValue());
+            }
+            --count;
+        }
+        for (Map.Entry<String, Set<Pair<Integer, Integer>>> entry: this.getFixedClassSchedules().entrySet()) {
+            fixedClassSchedules.put(entry.getKey(), entry.getValue());
+        }
+        for (Pair<Integer,Integer> time : scheduleRule.getRestrictedTime()) {
+            if (count >= 0 && mask[count]) {
+                restrictedTime.add(time);
+            }
+            --count;
+        }
+        restrictedTime.addAll(this.getRestrictedTime());
+        int maxLecturerHourInADay = Integer.min(this.maxLecturerHourInADay, scheduleRule.maxLecturerHourInADay);
+        return new ScheduleRule(nonConflictingClasses, fixedClassSchedules, restrictedTime, maxLecturerHourInADay);
+    }
 }

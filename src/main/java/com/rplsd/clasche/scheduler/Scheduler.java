@@ -7,6 +7,7 @@ import java.util.*;
 
 import static com.rplsd.clasche.Constants.workDaysInAWeek;
 import static com.rplsd.clasche.Constants.workHoursInADay;
+import static com.rplsd.clasche.Util.next_permutation;
 
 public class Scheduler {
     private ArrayList<ArrayList<List<ScheduleItem>>> schedules;
@@ -254,29 +255,48 @@ public class Scheduler {
     }
 
     public boolean schedule() {
-        sortClassroomAscendingByCapacity(); //To prioritize class room with smaller capacity in room selection
-        if (schedule(constraintScheduleRule.add(preferredScheduleRule), 0, 0)) return true;
+        sortClassroomAscendingByCapacity();
+        Integer totalFeature = preferredScheduleRule.getFixedClassSchedules().size()
+                + preferredScheduleRule.getRestrictedTime().size()
+                + preferredScheduleRule.getNonConflictingClasses().size();
+
+        Boolean[] Mask = new Boolean[totalFeature];
+        int depth = (int) Math.min(4.0/Math.log10(totalFeature), (double) totalFeature);
+        for (int i = 0; i < depth; ++i) {
+            for (int j = 0; j < i; ++j) {
+                Mask[j] = false;
+            }
+            for (int j = i; j < Mask.length; ++j) {
+                Mask[j] = true;
+            }
+            do {
+                if (schedule(constraintScheduleRule.add(preferredScheduleRule, Mask),0, 0)) {
+                    return true;
+                }
+            } while (next_permutation(Mask));
+        }
         return schedule(constraintScheduleRule, 0, 0);
     }
 
     public void printSchedule() {
         String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
         for (int day = 0; day < workDaysInAWeek; day++) {
-            int i = 0;
-            while (i < workHoursInADay){
-                if (!schedules.get(day).get(i).isEmpty())
+            int hour = 0;
+            while (hour < workHoursInADay){
+                if (!schedules.get(day).get(hour).isEmpty()) {
                     break;
-                else
-                    i++;
+                } else {
+                    hour++;
+                }
             }
             System.out.println("______________________");
             System.out.println(String.format("%s\n", days[day]));
-            if (i < workHoursInADay) {
-                for (int time = i; time < workHoursInADay; time++) {
+            if (hour < workHoursInADay) {
+                for (int time = hour; time < workHoursInADay; time++) {
                     System.out.print(String.format("Time %s: ", time));
-                    if (schedules.get(day).get(time).isEmpty())
+                    if (schedules.get(day).get(time).isEmpty()) {
                         System.out.println(String.format("-"));
-                    else {
+                    } else {
                         System.out.println(String.format("["));
                         for (ScheduleItem scheduleItem : schedules.get(day).get(time)) {
                             System.out.println(scheduleItem.toString());
@@ -284,9 +304,9 @@ public class Scheduler {
                         System.out.println("]");
                     }
                 }
-            }
-            else
+            } else {
                 System.out.println("-");
+            }
         }
     }
 
