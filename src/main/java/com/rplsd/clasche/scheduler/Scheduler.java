@@ -262,17 +262,17 @@ public class Scheduler {
     public void printSchedule() {
         String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
         for (int day = 0; day < workDaysInAWeek; day++) {
-            int i = 0;
-            while (i < workHoursInADay){
-                if (!schedules.get(day).get(i).isEmpty())
+            int hour = 0;
+            while (hour < workHoursInADay){
+                if (!schedules.get(day).get(hour).isEmpty())
                     break;
                 else
-                    i++;
+                    hour++;
             }
             System.out.println("______________________");
             System.out.println(String.format("%s\n", days[day]));
-            if (i < workHoursInADay) {
-                for (int time = i; time < workHoursInADay; time++) {
+            if (hour < workHoursInADay) {
+                for (int time = hour; time < workHoursInADay; time++) {
                     System.out.print(String.format("Time %s: ", time));
                     if (schedules.get(day).get(time).isEmpty())
                         System.out.println(String.format("-"));
