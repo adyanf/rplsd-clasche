@@ -7,6 +7,7 @@ import java.util.*;
 
 import static com.rplsd.clasche.Constants.workDaysInAWeek;
 import static com.rplsd.clasche.Constants.workHoursInADay;
+import static com.rplsd.clasche.Util.next_permutation;
 
 public class Scheduler {
     private ArrayList<ArrayList<List<ScheduleItem>>> schedules;
@@ -254,8 +255,26 @@ public class Scheduler {
     }
 
     public boolean schedule() {
-        sortClassroomAscendingByCapacity(); //To prioritize class room with smaller capacity in room selection
-        if (schedule(constraintScheduleRule.add(preferredScheduleRule), 0, 0)) return true;
+        sortClassroomAscendingByCapacity();
+        Integer totalFeature = preferredScheduleRule.getFixedClassSchedules().size()
+                + preferredScheduleRule.getRestrictedTime().size()
+                + preferredScheduleRule.getNonConflictingClasses().size();
+
+        Boolean[] Mask = new Boolean[totalFeature];
+        int depth = (int) Math.min(4.0/Math.log10(totalFeature), (double) totalFeature);
+        for (int i = 0; i < depth; ++i) {
+            for (int j = 0; j < i; ++j) {
+                Mask[j] = false;
+            }
+            for (int j = i; j < Mask.length; ++j) {
+                Mask[j] = true;
+            }
+            do {
+                if (schedule(constraintScheduleRule.add(preferredScheduleRule, Mask),0, 0)) {
+                    return true;
+                }
+            } while (next_permutation(Mask));
+        }
         return schedule(constraintScheduleRule, 0, 0);
     }
 
