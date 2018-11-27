@@ -28,7 +28,7 @@ public class ClascheWalker extends ClascheBaseListener {
 
     @Override
     public void exitDefineClassroom(ClascheParser.DefineClassroomContext ctx) {
-        System.out.println(String.format("Define Classroom: %s %s %s", roomId, capacity, facilities));
+        System.out.println(String.format("Defining Classroom: ID %s Capacity %s Facilities %s", roomId, capacity, facilities));
         Classroom classroom = new Classroom(
                 roomId, capacity, facilities
         );
@@ -39,7 +39,7 @@ public class ClascheWalker extends ClascheBaseListener {
 
     @Override
     public void exitDefineLecturer(ClascheParser.DefineLecturerContext ctx) {
-        System.out.println(String.format("Define Lecturer: %s %s", lecturerName, teachingHours));
+        System.out.println(String.format("Defining Lecturer: Codename %s Availabilities %s", lecturerName, teachingHours));
         Lecturer lecturer = new Lecturer(
                 lecturerName, ClascheContext.availabilityParser(teachingHours)
         );
@@ -54,8 +54,8 @@ public class ClascheWalker extends ClascheBaseListener {
     @Override
     public void exitDefineClass(ClascheParser.DefineClassContext ctx) {
         System.out.println(String.format(
-                "Define Class: %s %s %s %s %s %s",
-                className, attendeesCount, maxCapacity, facilities, duration, lecturers
+                "Defining Class: Code %s Lecturers %s Participant %s Max-capacity %s Facilities %s Duration %s",
+                className, lecturers, attendeesCount, maxCapacity, facilities, duration
         ));
         Course course = new Course(
                 className, attendeesCount, maxCapacity, facilities, duration, lecturers
@@ -68,9 +68,9 @@ public class ClascheWalker extends ClascheBaseListener {
     @Override
     public void enterStartSchedule(ClascheParser.StartScheduleContext ctx) {
         if (ClascheContext.getInstance().getScheduler().schedule()) {
-            System.out.println("Schedule Created");
+            System.out.println("Schedule has been created");
         } else {
-            System.out.println("No schedule can satisfy all constraint");
+            System.out.println("There is no schedule that can satisfy all the constraint.");
         }
         ClascheContext.getInstance().getScheduler().printSchedule();
 
@@ -175,14 +175,14 @@ public class ClascheWalker extends ClascheBaseListener {
     public void exitDefineConstraint(ClascheParser.DefineConstraintContext ctx) {
         switch (currentRuleType) {
             case ClascheContext.FIXED_SCHEDULE:
-                System.out.println(String.format("Define Constraint Fixed Schedule for Class %s : %s", className, teachingHours));
+                System.out.println(String.format("Defining Constraint for Fixed Schedule : Class %s Schedule-Time %s", className, teachingHours));
                 ClascheContext.getInstance().getScheduler().getConstraintScheduleRule().addFixedClassSchedule(
                         className, ClascheContext.timeParser(teachingHours)
                 );
                 teachingHours = new ArrayList<>();
                 break;
             case ClascheContext.NON_CONFLICT:
-                System.out.println("Define Constraint Non-Conflicting classes "+ classes);
+                System.out.println("Defining Constraint for Non-Conflicting Classes : "+ classes);
                 for(Pair<String,String> i : classes) {
                     ClascheContext.getInstance().getScheduler().getConstraintScheduleRule().addNonConflictingClassRule(
                             i.getKey(), i.getValue()
@@ -191,13 +191,13 @@ public class ClascheWalker extends ClascheBaseListener {
                 classes = new ArrayList<>();
                 break;
             case ClascheContext.MAX_LECTURER_HOUR:
-                System.out.println("Define Constraint Teaching duration limit per day "+ duration+ "hour");
+                System.out.println("Defining Constraint for Teaching Duration Limit Per Day "+ duration+ " hours");
                 ClascheContext.getInstance().getScheduler().getConstraintScheduleRule().setMaxLecturerHourInADay(
                         duration
                 );
                 break;
             case ClascheContext.RESTRICTED_TIME:
-                System.out.println("Define Constraint Unavailable at "+ teachingHours);
+                System.out.println("Defining Constraint for Unavailable Schedule-Time : "+ teachingHours);
                 for(String i : teachingHours) {
                     Pair<Integer,Integer> pairTimeDay = ClascheContext.timeConverter(i);
                     ClascheContext.getInstance().getScheduler().getConstraintScheduleRule().addRestrictedTime(
@@ -212,14 +212,14 @@ public class ClascheWalker extends ClascheBaseListener {
     public void exitDefinePreference(ClascheParser.DefinePreferenceContext ctx) {
         switch (currentRuleType) {
             case ClascheContext.FIXED_SCHEDULE:
-                System.out.println(String.format("Define Preference Fixed Schedule for Class %s : %s", className, teachingHours));
+                System.out.println(String.format("Defining Preference for Fixed Schedule : Class %s Schedule-Time %s", className, teachingHours));
                 ClascheContext.getInstance().getScheduler().getPreferredScheduleRule().addFixedClassSchedule(
                         className, ClascheContext.timeParser(teachingHours)
                 );
                 teachingHours = new ArrayList<>();
                 break;
             case ClascheContext.NON_CONFLICT:
-                System.out.println("Define Preference Non-Conflicting classes "+ classes);
+                System.out.println("Defining Preference for Non-Conflicting Classes : "+ classes);
                 for(Pair<String,String> i : classes) {
                     ClascheContext.getInstance().getScheduler().getPreferredScheduleRule().addNonConflictingClassRule(
                             i.getKey(), i.getValue()
@@ -227,13 +227,13 @@ public class ClascheWalker extends ClascheBaseListener {
                 }
                 break;
             case ClascheContext.MAX_LECTURER_HOUR:
-                System.out.println("Define Preference Teaching duration limit per day "+ duration+ "hour");
+                System.out.println("Defining Preference for Teaching Duration Limit Per Day : "+ duration+ "hours");
                 ClascheContext.getInstance().getScheduler().getPreferredScheduleRule().setMaxLecturerHourInADay(
                         duration
                 );
                 break;
             case ClascheContext.RESTRICTED_TIME:
-                System.out.println("Define Preference Unavailable at "+ teachingHours);
+                System.out.println("Defining Preference for Unavailable Schedule-Time : "+ teachingHours);
                 for(String i : teachingHours) {
                     Pair<Integer,Integer> pairTimeDay = ClascheContext.timeConverter(i);
                     ClascheContext.getInstance().getScheduler().getPreferredScheduleRule().addRestrictedTime(
